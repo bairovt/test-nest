@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from './user';
 import { UserTokenService } from './token/user-token.service';
 
@@ -11,5 +11,13 @@ export class UserService {
 
   constructor(
     private readonly userTokenService: UserTokenService,
-  ) {}
+  ) { }
+
+  login(email: string, password: string): string {
+    const foundUser = this.users.find(user => user.email === email && user.password === password);
+    if (!foundUser) {
+      throw new UnauthorizedException();
+    }
+    return this.userTokenService.createToken(foundUser.email);
+  }
 }
